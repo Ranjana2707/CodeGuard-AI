@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: codeguard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-codeguard}
+      POSTGRES_USER:     ${POSTGRES_USER:-codeguard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-codeguard_secret}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-codeguard} -d ${POSTGRES_DB:-codeguard}"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+    networks:
+      - codeguard-net
+
+  # ── Spring Boot Backend ────────────────────────────────────────────────
+  backend:
+    build:
+      context:    ./backend
+      dockerfile: Dockerfile
+    container_name: codeguard-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL:  jdbc:postgresql://postgres:5432/${POSTGRES_DB:-codeguard}
+      DB_USERNAME:   ${POSTGRES_USER:-codeguard}
+      DB_PASSWORD:   ${POSTGRES_PASSWORD:-codeguard_secret}
+      JWT_SECRET:    ${JWT_SECRET:-change-me-in-production-minimum-256-bits-here}
+      AI_API_KEY:    ${AI_API_KEY}
+      AI_MODEL:      ${AI_MODEL:-claude-sonnet-4-20250514}
+      AI_PROVIDER:   ${AI_PROVIDER:-anthropic}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout:  10s
+      retries:  5
+      start_period: 60s
+    networks:
+      - codeguard-net
+
+  # ── React Frontend ─────────────────────────────────────────────────────
+  frontend:
+    build:
+      context:    ./frontend
+      dockerfile: Dockerfile
+    container_name: codeguard-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    networks:
+      - codeguard-net
+
+volumes:
+  postgres_data:
+
+networks:
+  codeguard-net:
+    driver: bridge

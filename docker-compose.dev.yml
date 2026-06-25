@@ -1,0 +1,38 @@
+version: '3.9'
+
+# Development override — mounts source, enables hot reload
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      target: builder           # Stop at the build stage, skip runtime image
+    volumes:
+      - ./backend:/app
+      - maven_cache:/root/.m2
+    command: >
+      mvn spring-boot:run
+      -Dspring-boot.run.jvmArguments="-Dspring.devtools.restart.enabled=true"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+
+volumes:
+  maven_cache:
+  node_modules:
