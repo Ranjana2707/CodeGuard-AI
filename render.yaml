@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: codeguard-ai-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    plan: standard
+    region: oregon
+    buildCommand: cd backend && mvn clean package -DskipTests
+    startCommand: java -jar backend/target/codeguard-ai-1.0.0.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_MODEL
+        value: claude-sonnet-4-20250514
+      - key: AI_PROVIDER
+        value: anthropic
