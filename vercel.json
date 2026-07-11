@@ -1,6 +1,0 @@
-{
-  "framework": "vite",
-  "env": {
-    "VITE_API_URL": "https://codeguardai-of4z.onrender.com/api"
-  }
-}
