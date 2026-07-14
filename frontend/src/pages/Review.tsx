@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import Editor from '@monaco-editor/react'
 import {
-  ShieldSearch, Download, Code2, Upload, GitMerge,
+  Shield, Download, Code2, Upload, GitMerge,
   Loader2, CheckCircle2, AlertTriangle, Wand2, Trash2, FileCode,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -268,7 +268,7 @@ export default function Review() {
               {analyzeMutation.isPending ? (
                 <><Loader2 size={15} className="animate-spin" /> Analyzing with AI…</>
               ) : (
-                <><ShieldSearch size={15} /> Analyze with AI</>
+                <><Shield size={15} /> Analyze with AI</>
               )}
             </button>
             {result && (

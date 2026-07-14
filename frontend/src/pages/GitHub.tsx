@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  GitPullRequest, Github, RefreshCw, Plus, ShieldSearch,
+  GitPullRequest, Github, RefreshCw, Plus, Shield,
   Loader2, CheckCircle2, GitBranch, FileCode, Settings2,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -98,7 +98,7 @@ export default function GitHub() {
                       {reviewMutation.isPending && selectedPR?.number === pr.number ? (
                         <Loader2 size={12} className="animate-spin" />
                       ) : (
-                        <ShieldSearch size={12} />
+                        <Shield size={12} />
                       )}
                       Review
                     </button>

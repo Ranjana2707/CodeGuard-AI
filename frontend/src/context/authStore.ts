@@ -41,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'codeguard-auth',
-      partialState: (state) => ({
+      partialize: (state: AuthState) => ({
         user: state.user,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

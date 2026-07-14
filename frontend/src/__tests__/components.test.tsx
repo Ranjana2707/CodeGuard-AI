@@ -53,9 +53,9 @@ describe('IssueCard', () => {
   })
 
   it('renders without optional fields', () => {
-    const minimal = { title: 'Bug', severity: 'LOW' as const, issueType: 'Bug', description: 'desc', fixSuggestion: '' }
+    const minimal = { title: 'Minimal Bug', severity: 'LOW' as const, issueType: 'Bug', description: 'desc', fixSuggestion: '' }
     wrap(<IssueCard issue={minimal} />)
-    expect(screen.getByText('Bug')).toBeInTheDocument()
+    expect(screen.getByText('Minimal Bug')).toBeInTheDocument()
     expect(screen.queryByText(/Line/)).not.toBeInTheDocument()
   })
 })
@@ -113,7 +113,7 @@ import api from '../services/api'
 vi.mock('../services/api')
 
 describe('reviewService', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => { vi.clearAllMocks() })
 
   it('calls correct endpoint for analyze', async () => {
     const mockPost = vi.fn().mockResolvedValue({ data: { data: { issues: [], securityScore: 80, summary: 'ok', status: 'COMPLETED', language: 'js', fileName: 'test.js' } } })
